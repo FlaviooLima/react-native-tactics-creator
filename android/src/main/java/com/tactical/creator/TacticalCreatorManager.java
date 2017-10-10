@@ -6,7 +6,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 
-public class Module extends  SimpleViewManager<View>  {
+public class TacticalCreatorManager extends  SimpleViewManager<View>  {
 
   private ThemedReactContext mContext;
   private View view;

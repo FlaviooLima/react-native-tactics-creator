@@ -12,7 +12,7 @@ import java.util.List;
 
 
 
-public class Package implements ReactPackage {
+public class TacticalCreatorPackage implements ReactPackage {
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
@@ -27,7 +27,7 @@ public class Package implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Arrays.<ViewManager> asList(
-                new Module()
+                new TacticalCreatorManager()
         );
     }
 }

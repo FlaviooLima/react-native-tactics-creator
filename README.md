@@ -33,7 +33,7 @@ There are many ways to do this, here's the way I do it:
     * Add the following to `android/app/src/main/java/**/MainApplication.java`:
         ```java
 
-        import com.tactical.creator.Package; // add this for react-native-android-library-boilerplate
+        import com.tactical.creator.TacticalCreatorPackage; // add this for react-native-android-library-boilerplate
 
         public class MainApplication extends Application implements ReactApplication {
 
@@ -41,7 +41,7 @@ There are many ways to do this, here's the way I do it:
             protected List<ReactPackage> getPackages() {
                 return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
-                    new Package()     // add this for react-native-android-library-boilerplate
+                    new TacticalCreatorPackage()     // add this for react-native-android-library-boilerplate
                 );
             }
         }
@@ -50,5 +50,5 @@ There are many ways to do this, here's the way I do it:
 
     ```javascript
     import TacticsCreator from 'react-native-tactics-creator'
-    TacticsCreator.show('TacticsCreator runs fine', TacticsCreator.LONG)
+    <TacticsCreator /> 
     ```
