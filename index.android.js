@@ -1,5 +1,13 @@
 'use strict'
 
-import { NativeModules } from 'react-native'
-// name as defined via ReactContextBaseJavaModule's getName
-module.exports = NativeModules.TacticalCreator
+import React, { Component, PropTypes } from 'react'
+import { View, requireNativeComponent } from 'react-native'
+
+var iface = {
+    name: 'TacticalCreator',
+    propTypes: {
+    	...View.propTypes
+    }
+}
+
+module.exports = requireNativeComponent('TacticalCreator', iface);

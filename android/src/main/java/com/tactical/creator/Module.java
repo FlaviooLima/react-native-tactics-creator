@@ -1,22 +1,15 @@
 package com.tactical.creator;
 
-import android.widget.Toast;
+import android.view.View;
+import com.facebook.react.uimanager.SimpleViewManager;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 
-import java.util.HashMap;
-import java.util.Map;
+public class Module extends  SimpleViewManager<View>  {
 
-public class Module extends ReactContextBaseJavaModule {
-
-  private static final String DURATION_SHORT_KEY = "SHORT";
-  private static final String DURATION_LONG_KEY = "LONG";
-
-  public Module(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
+  private ThemedReactContext mContext;
+  private View view;
 
   @Override
   public String getName() {
@@ -24,15 +17,18 @@ public class Module extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-    constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
-    constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
-    return constants;
+  public View createViewInstance(ThemedReactContext context){
+    // Create a view here
+    // https://facebook.github.io/react-native/docs/native-components-android.html#2-implement-method-createviewinstance
+    mContext = context;
+    view = new View(context);
+    view.setBackgroundColor(0xFF00FF00);
+    return view;
   }
 
-  @ReactMethod
-  public void show(String message, int duration) {
-    Toast.makeText(getReactApplicationContext(), message, duration).show();
+  @ReactProp(name = "exampleProp")
+  public void setExampleProp(View view, String prop) {
+    // Set properties from React onto your native component via a setter method
+    // https://facebook.github.io/react-native/docs/native-components-android.html#3-expose-view-property-setters-using-reactprop-or-reactpropgroup-annotation
   }
 }
