@@ -9,7 +9,11 @@ There are many ways to do this, here's the way I do it:
 
 
 3. Link the library:
+
+
     Automatic: `react-native link react-native-tactics-creator`
+
+
     Manual:
     * Add the following to `android/settings.gradle`:
         ```
