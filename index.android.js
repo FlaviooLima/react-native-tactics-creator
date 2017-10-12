@@ -3,11 +3,11 @@
 import React, { Component, PropTypes } from 'react'
 import { View, requireNativeComponent } from 'react-native'
 
-var iface = {
+var face = {
     name: 'TacticalCreator',
     propTypes: {
     	...View.propTypes
     }
 }
 
-module.exports = requireNativeComponent('TacticalCreator', iface);
+module.exports = requireNativeComponent('TacticalCreator', face);

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/slide_bar"
+    android:layout_width="70dp"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ScrollView
+        android:id="@+id/slide_bar_scrollview"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:background="#D3D3D3" />
+
+</LinearLayout>
