@@ -1,27 +1,91 @@
 {
-  "name": "react-native-tactics-creator",
-  "version": "0.0.1",
-  "author": "Flavio Lima",
-  "private": false,
-  "license": "Unlicense",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/flaviotobi/react-native-tactics-creator.git"
+  "_args": [
+    [
+      {
+        "raw": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+        "spec": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:flaviotobi/react-native-tactics-creator.git",
+          "sshUrl": "git+ssh://git@github.com/flaviotobi/react-native-tactics-creator.git",
+          "httpsUrl": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+          "gitUrl": "git://github.com/flaviotobi/react-native-tactics-creator.git",
+          "shortcut": "github:flaviotobi/react-native-tactics-creator",
+          "directUrl": "https://raw.githubusercontent.com/flaviotobi/react-native-tactics-creator/master/package.json"
+        }
+      },
+      "/Users/macmini/reactNative/newTacticalSoccer"
+    ]
+  ],
+  "_from": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+  "_id": "react-native-tactics-creator@0.0.1",
+  "_inCache": true,
+  "_location": "/react-native-tactics-creator",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+    "spec": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:flaviotobi/react-native-tactics-creator.git",
+      "sshUrl": "git+ssh://git@github.com/flaviotobi/react-native-tactics-creator.git",
+      "httpsUrl": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+      "gitUrl": "git://github.com/flaviotobi/react-native-tactics-creator.git",
+      "shortcut": "github:flaviotobi/react-native-tactics-creator",
+      "directUrl": "https://raw.githubusercontent.com/flaviotobi/react-native-tactics-creator/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/flaviotobi/react-native-tactics-creator.git#a51ef133d9b001309ed226d9d39f54c67eebcc8c",
+  "_shasum": "a2ce281db59e2a2c78a375e1fb61b1bff56e0868",
+  "_shrinkwrap": null,
+  "_spec": "git+https://github.com/flaviotobi/react-native-tactics-creator.git",
+  "_where": "/Users/macmini/reactNative/newTacticalSoccer",
+  "author": {
+    "name": "Flavio Lima"
   },
   "bugs": {
     "url": "https://github.com/flaviotobi/react-native-tactics-creator/issues"
   },
+  "dependencies": {},
+  "description": "This is a test inHouse component. For now....",
+  "devDependencies": {},
+  "gitHead": "a51ef133d9b001309ed226d9d39f54c67eebcc8c",
   "homepage": "https://github.com/flaviotobi/react-native-tactics-creator",
   "keywords": [
     "react-native",
     "android",
     "library"
   ],
+  "license": "Unlicense",
+  "name": "react-native-tactics-creator",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "react-native": ">=0.41.2"
+  },
+  "private": false,
+  "readme": "## React Native Android Tactics Creator\n  This is a test inHouse component. For now....\n\n## Getting started\n\nThere are many ways to do this, here's the way I do it:\n\n2. Do `npm install git+https://github.com/flaviotobi/react-native-tactics-creator.git --save` in your main project.\n\n\n3. Link the library:\n\n\n    Automatic: `react-native link react-native-tactics-creator`\n\n\n    Manual:\n    * Add the following to `android/settings.gradle`:\n        ```\n        include ':react-native-tactics-creator'\n        project(':react-native-tactics-creator').projectDir = new File(settingsDir, '../node_modules/react-native-tactics-creator/android')\n        ```\n\n    * Add the following to `android/app/build.gradle`:\n        ```xml\n        ...\n\n        dependencies {\n            ...\n            compile project(':react-native-tactics-creator')\n        }\n        ```\n    * Add the following to `android/app/src/main/java/**/MainApplication.java`:\n        ```java\n\n        import com.tactical.creator.TacticalCreatorPackage; // add this for react-native-android-library-boilerplate\n\n        public class MainApplication extends Application implements ReactApplication {\n\n            @Override\n            protected List<ReactPackage> getPackages() {\n                return Arrays.<ReactPackage>asList(\n                    new MainReactPackage(),\n                    new TacticalCreatorPackage()     // add this for react-native-android-library-boilerplate\n                );\n            }\n        }\n        ```\n4. Simply `import/require` it by the name defined in your library's `package.json`:\n\n    ```javascript\n    import TacticsCreator from 'react-native-tactics-creator'\n    <TacticsCreator /> \n    ```\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flaviotobi/react-native-tactics-creator.git"
+  },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
-  "peerDependencies": {
-    "react-native": ">=0.41.2"
-  }
+  "version": "0.0.1"
 }

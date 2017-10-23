@@ -1,17 +1,22 @@
 package com.tactical.creator;
 
 import android.graphics.Color;
-import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.tactical.creator.components.PlayerFront;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class TacticalCreatorManager extends SimpleViewManager<View> {
@@ -22,7 +27,9 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
     private Button button_play, button_pause, button_1x, button_2x, button_4x;
     private ImageView field_lines_image;
     private Boolean isPlaying;
-    private int velocity, slidePosition;
+    private int velocity, slidePosition, screenWidth, screenHeight;
+    private JSONArray sourceArray;
+    private RelativeLayout base_svg;
 
 
     @Override
@@ -36,6 +43,7 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
         mContext = context;
         view = LayoutInflater.from(context).inflate(R.layout.activity_tactical_creator_view, null);
 
+        base_svg = (RelativeLayout) view.findViewById(R.id.base_svg);
         button_play = (Button) view.findViewById(R.id.button_play);
         button_pause = (Button) view.findViewById(R.id.button_pause);
         button_1x = (Button) view.findViewById(R.id.button_1x);
@@ -57,8 +65,29 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
         button_4x.setOnClickListener(velocitiy4());
 
         velocity = 1000;
-        slidePosition = 0;
+        slidePosition = 1;
     }
+
+    private void render() {
+        try {
+            JSONObject slide = sourceArray.getJSONObject(slidePosition);
+
+//          Players
+            JSONArray playerExercises = slide.getJSONArray("playerExercises");
+            for (int i = 0; i < playerExercises.length(); i++) {
+                JSONObject player = playerExercises.getJSONObject(i);
+
+                switch (player.getInt("type")) {
+                    case 1:
+                        (new PlayerFront()).create(mContext, base_svg, player, screenHeight, screenWidth, velocity);
+                        break;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public View.OnClickListener play() {
@@ -91,6 +120,9 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                 button_1x.setBackgroundColor(Color.parseColor("#16ad8b"));
                 button_2x.setBackgroundColor(Color.parseColor("#2e2e2e"));
                 button_4x.setBackgroundColor(Color.parseColor("#2e2e2e"));
+//                teste to delete
+                slidePosition = 1;
+                render();
             }
         };
     }
@@ -103,6 +135,9 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                 button_1x.setBackgroundColor(Color.parseColor("#2e2e2e"));
                 button_2x.setBackgroundColor(Color.parseColor("#16ad8b"));
                 button_4x.setBackgroundColor(Color.parseColor("#2e2e2e"));
+//                teste to delete
+                slidePosition = 0;
+                render();
             }
         };
     }
@@ -119,13 +154,6 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
         };
     }
 
-
-    //TODO: dados para renderizar,
-
-    @ReactProp(name = "data")
-    public void setData(View view, String source) {
-        Log.e("TAG", source);
-    }
 
     @ReactProp(name = "src")
     public void setSrcImage(View view, String source) {
@@ -170,5 +198,18 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
 
     }
 
+    @ReactProp(name = "data")
+    public void setScreenHeight(View view, String source) {
+        try {
+            JSONObject auxObject = new JSONObject(source);
+            sourceArray = auxObject.getJSONArray("preparedData");
+            screenWidth = auxObject.getInt("widthOriginalDevice");
+            screenHeight = auxObject.getInt("heightOriginalDevice");
+            render();
+        } catch (JSONException e) {
+            e.printStackTrace();
+//            Log.e("FLAVIO", "Failed TO RECIEVE DATA");
+        }
+    }
 
 }
