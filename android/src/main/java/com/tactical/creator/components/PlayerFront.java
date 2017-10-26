@@ -1,24 +1,33 @@
 package com.tactical.creator.components;
 
+import com.tactical.creator.utis.*;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.Keyframe;
 import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.PropertyValuesHolder;
+import com.nineoldandroids.animation.ValueAnimator;
+import com.nineoldandroids.util.Property;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,10 +50,6 @@ public class PlayerFront {
     public float HEIGHT = 70;
     public int iterador = 0;
 
-    public Handler handler;
-    public Runnable runnable;
-    int step;
-
     private boolean inited;
     private Paint paint_0;
     private Typeface typeface_0;
@@ -56,6 +61,11 @@ public class PlayerFront {
     private Path path_2;
     private Paint paint_5;
     private Path path_3;
+
+    private ThemedReactContext context;
+    private Bitmap b;
+    private RelativeLayout base_svg;
+    private CheckFastRotation CheckFastRotation = new CheckFastRotation();
 
 
     private void init() {
@@ -76,6 +86,9 @@ public class PlayerFront {
 
     public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, final Integer screenHeight, final Integer screenWidth, Integer velocity) {
         try {
+            this.context = context;
+            this.base_svg = base_svg;
+
             float scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
             scaleHEIGHT = scaleHEIGHT * scale;
@@ -84,16 +97,16 @@ public class PlayerFront {
             WIDTH = WIDTH * scale;
             HEIGHT = HEIGHT * scale;
 
-            Bitmap b = Bitmap.createBitmap((int) WIDTH, (int) HEIGHT, Bitmap.Config.ARGB_8888);
+            b = Bitmap.createBitmap((int) WIDTH, (int) HEIGHT, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
 
             //This code is for testing img background width and height
-            Paint paint = new Paint();
-            Path path = new Path();
-            paint.setStyle(Paint.Style.FILL);
-//            paint.setColor(Color.RED);
-            paint.setColor(Color.TRANSPARENT);
-            canvas.drawPaint(paint);
+//            Paint paint = new Paint();
+//            Path path = new Path();
+//            paint.setStyle(Paint.Style.FILL);
+////            paint.setColor(Color.RED);
+//            paint.setColor(Color.TRANSPARENT);
+//            canvas.drawPaint(paint);
             //END
 
             init();
@@ -111,10 +124,7 @@ public class PlayerFront {
             canvas.save();
             paint_2.reset();
             paint_2.set(paint_0);
-
             paint_2.setColor(Color.parseColor("#" + Integer.toHexString(player.getInt("color"))));
-//            paint_2.setColor( (int) Long.parseLong(Integer.toHexString(player.getInt("color")), 16) );
-
             path_0.reset();
             path_0.moveTo(125.000000f, 714.700012f);
             path_0.cubicTo(204.000000f, 675.200012f, 173.600006f, 706.299988f, 270.500000f, 665.900024f);
@@ -206,22 +216,10 @@ public class PlayerFront {
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             final JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-//            int  step = arrayPosition.length()/58;
-            float stepaux = (arrayPosition.length() / 2 / 5000) * 1000;
-            Log.e("FLAVIO", "STEP> " + stepaux);
-            step = (int) stepaux;
 
-            handler  = new Handler();
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    doAnimations(myImage, arrayPosition, screenHeight, screenWidth);
-                }
-            };
+            doAnimations(myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"));
 
-            doAnimations(myImage, arrayPosition, screenHeight, screenWidth);
-
-            //            FALTA ANIMATIONS, ROTATION
+//            FALTA ANIMATIONS, ROTATION
 //            Log.e("FLAVIO", "AQUI VAI FICAR");
 //            Log.e("FLAVIO", String.valueOf(player));
 
@@ -230,91 +228,77 @@ public class PlayerFront {
         }
     }
 
-    public void doAnimations(final ImageView myImage, final JSONArray arrayPosition, final Integer screenHeight, final Integer screenWidth) {
+    public void doAnimations(ImageView myImage, JSONArray arrayPosition, Integer screenHeight, Integer screenWidth, Integer velocity, float rotation) {
         try {
-            int px1,py1;
+//            TODO: do this for just one position array
 
-            if ((iterador + 1) < arrayPosition.length()) {
-                px1 = ((arrayPosition.getInt(iterador) * screenWidth) / 906);
-                py1 = ((arrayPosition.getInt(iterador + 1) * screenHeight) / 577);
+            List<Keyframe> kfx = new ArrayList<Keyframe>();
+            List<Keyframe> kfy = new ArrayList<Keyframe>();
+            List<Keyframe> kfrotation = new ArrayList<Keyframe>();
+            float x1, y1;
+            float[] toRotation = CheckFastRotation.doMath(myImage.getRotation(), rotation);
+            float stepFractions = (float) (0.99 / arrayPosition.length());
+            float fraction = stepFractions;
 
-                myImage.setX(px1);
-                myImage.setY(py1);
+            iterador = 0;
 
-                iterador += 2;
+//           Add's initial keyframe for x and y
+            kfx.add(Keyframe.ofFloat(0f, convertDpToPixels(((arrayPosition.getInt(iterador) * screenWidth) / 906), context)));
+            kfy.add(Keyframe.ofFloat(0f, convertDpToPixels(((arrayPosition.getInt(iterador + 1) * screenHeight) / 577), context)));
 
-                handler.postDelayed(runnable, 7);
+            iterador = iterador + 2;
+
+            while (iterador < arrayPosition.length()) {
+                x1 = ((arrayPosition.getInt(iterador) * screenWidth) / 906);
+                y1 = ((arrayPosition.getInt(iterador + 1) * screenHeight) / 577);
+
+                x1 = convertDpToPixels(x1, context);
+                y1 = convertDpToPixels(y1, context);
+
+                kfx.add(Keyframe.ofFloat(fraction, x1));
+                kfy.add(Keyframe.ofFloat(fraction, y1));
+
+                fraction += stepFractions;
+
+                iterador = iterador + 2;
             }
 
-//            while (iterador<arrayPosition.length()){
-//                px1=((arrayPosition.getInt(iterador) * screenWidth) / 906);
-//                py1=((arrayPosition.getInt(iterador + 1) * screenHeight) / 577);
-////                px2=((arrayPosition.getInt(iterador + 2) * screenWidth) / 906);
-////                py2=((arrayPosition.getInt(iterador + 3) * screenHeight) / 577);
-//                myImage.setX(px1);
-//                myImage.setY(py1);
-//                try {
-//                    AC
-//                    Thread.sleep(step);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                iterador += 2;
-//            }
+//           Add's final keyframe for x and y
+            kfx.add(Keyframe.ofFloat(1f, convertDpToPixels(((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906), context)));
+            kfy.add(Keyframe.ofFloat(1f, convertDpToPixels(((arrayPosition.getInt(arrayPosition.length() - 1) * screenHeight) / 577), context)));
 
-////            Second  Animation try
-//            TranslateAnimation translateAnimation = new TranslateAnimation(
-//                    ((arrayPosition.getInt(iterador) * screenWidth) / 906), ((arrayPosition.getInt(iterador+2) * screenWidth) / 906),
-//                    ((arrayPosition.getInt(iterador + 1) * screenHeight) / 577), ((arrayPosition.getInt(iterador + 3 ) * screenHeight) / 577));
-//
-//            Animation.AnimationListener animation1Listener = new Animation.AnimationListener() {
-//                @Override
-//                public void onAnimationStart(Animation animation) {
-//                    // TODO Auto-generated method stub
-//                }
-//
-//                @Override
-//                public void onAnimationRepeat(Animation animation) {
-//                    // TODO Auto-generated method stub
-//                }
-//
-//                @Override
-//                public void onAnimationEnd(Animation animation) {
-//                    Log.e("FLAVIO", "Acabou A animacao");
-//                    iterador = iterador + 2;
-//                    doAnimations(myImage, arrayPosition, screenHeight, screenWidth, step);
-//                }
-//            };
-//            translateAnimation.setAnimationListener(animation1Listener);
-//
-//            translateAnimation.setDuration(step);
-////            translateAnimation.setDuration(((arrayPosition.length()/2)/4000));
-//            translateAnimation.setFillAfter(true);
-//
-//            myImage.startAnimation(translateAnimation);
+//           Add's  keyframe for rotation
+            kfrotation.add(Keyframe.ofFloat(0.5f, toRotation[0]));
+            kfrotation.add(Keyframe.ofFloat(1f, toRotation[1]));
 
+//           transform  keyframes
+            PropertyValuesHolder pvhX = PropertyValuesHolder.ofKeyframe("x", kfx.toArray(new Keyframe[0]));
+            PropertyValuesHolder pvhY = PropertyValuesHolder.ofKeyframe("y", kfy.toArray(new Keyframe[0]));
+            PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("rotation", kfrotation.toArray(new Keyframe[0]));
 
-//            AnimatorSet teste = new AnimatorSet();
-//            ArrayList<Animator> viewAnimList = new ArrayList<>();
-//
-//            for (int i = 0; i < arrayPosition.length(); i += 200) {
-//                Animator anim = ObjectAnimator.ofFloat(v, "alpha", 0f).setDuration(100);
-//                viewAnimList.add(anim);
-//            }
-//            teste.playSequentially(viewAnimList);
+            ObjectAnimator rotationAnim = ObjectAnimator.ofPropertyValuesHolder(myImage, pvhX, pvhY, pvhRotation);
 
+            rotationAnim.setDuration(velocity);
+            rotationAnim.setStartDelay(4000);
+            rotationAnim.start();
+            Log.e("FLAVIO", "Comecou Animacoes");
 
-//            First Animation try
-//            AnimationSet s = new AnimationSet(false);
-//            for (int i = 0; i < arrayPosition.length(); i += 200) {
-//                s.addAnimation(new TranslateAnimation(0, ((arrayPosition.getInt(i) * screenWidth) / 906), 0, ((arrayPosition.getInt(i + 1) * screenHeight) / 577)));
-//            }
-//            s.setDuration(4000);
-//            base_svg.addView(myImage);
-//            myImage.startAnimation(s);
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
+                            Log.e("FLAVIO", "ACABOU Animacoes");
+                        }
+                    },
+                    (velocity + 4000));
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    public static int convertDpToPixels(float dp, Context context) {
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+        return px;
+    }
+
 }
