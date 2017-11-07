@@ -2,40 +2,31 @@ package com.tactical.creator.components;
 
 import com.tactical.creator.utis.*;
 
-import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
+
 import android.graphics.Typeface;
-import android.os.Handler;
+
+
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.TranslateAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+
 import android.widget.RelativeLayout;
 
+
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.Keyframe;
-import com.nineoldandroids.animation.ObjectAnimator;
-import com.nineoldandroids.animation.PropertyValuesHolder;
-import com.nineoldandroids.animation.ValueAnimator;
-import com.nineoldandroids.util.Property;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by macmini on 13/10/2017.
@@ -48,7 +39,6 @@ public class PlayerFront {
     public float scaleHEIGHT = 0.30f;
     public float WIDTH = 70;
     public float HEIGHT = 70;
-    public int iterador = 0;
 
     private boolean inited;
     private Paint paint_0;
@@ -62,11 +52,9 @@ public class PlayerFront {
     private Paint paint_5;
     private Path path_3;
 
-    private ThemedReactContext context;
     private Bitmap b;
-    private RelativeLayout base_svg;
-    private CheckFastRotation CheckFastRotation = new CheckFastRotation();
 
+    private CustomAnimation CustomAnimation = new CustomAnimation();
 
     private void init() {
         if (inited) return;
@@ -84,10 +72,9 @@ public class PlayerFront {
     }
 
 
-    public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, final Integer screenHeight, final Integer screenWidth, Integer velocity) {
+    public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, Integer screenHeight, Integer screenWidth, Integer velocity, float[] lastPosition) {
+
         try {
-            this.context = context;
-            this.base_svg = base_svg;
 
             float scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
@@ -100,14 +87,14 @@ public class PlayerFront {
             b = Bitmap.createBitmap((int) WIDTH, (int) HEIGHT, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
 
-            //This code is for testing img background width and height
+//            //This code is for testing img background width and height
 //            Paint paint = new Paint();
 //            Path path = new Path();
 //            paint.setStyle(Paint.Style.FILL);
-////            paint.setColor(Color.RED);
-//            paint.setColor(Color.TRANSPARENT);
+//            paint.setColor(Color.RED);
+////            paint.setColor(Color.TRANSPARENT);
 //            canvas.drawPaint(paint);
-            //END
+//            //END
 
             init();
             canvas.save();
@@ -207,98 +194,25 @@ public class PlayerFront {
             canvas.drawPath(path_3, paint_5);
             canvas.restore();
 
-            final ImageView myImage = new ImageView(context);
+
+            ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
+
+            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
+            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
-            iterador = 0;
 
             JSONObject lineAnima = player.getJSONObject("lineAnima");
-            final JSONArray arrayPosition = lineAnima.optJSONArray("data");
+            JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation") );
 
-            doAnimations(myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"));
-
-//            FALTA ANIMATIONS, ROTATION
-//            Log.e("FLAVIO", "AQUI VAI FICAR");
-//            Log.e("FLAVIO", String.valueOf(player));
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    public void doAnimations(ImageView myImage, JSONArray arrayPosition, Integer screenHeight, Integer screenWidth, Integer velocity, float rotation) {
-        try {
-//            TODO: do this for just one position array
-
-            List<Keyframe> kfx = new ArrayList<Keyframe>();
-            List<Keyframe> kfy = new ArrayList<Keyframe>();
-            List<Keyframe> kfrotation = new ArrayList<Keyframe>();
-            float x1, y1;
-            float[] toRotation = CheckFastRotation.doMath(myImage.getRotation(), rotation);
-            float stepFractions = (float) (0.99 / arrayPosition.length());
-            float fraction = stepFractions;
-
-            iterador = 0;
-
-//           Add's initial keyframe for x and y
-            kfx.add(Keyframe.ofFloat(0f, convertDpToPixels(((arrayPosition.getInt(iterador) * screenWidth) / 906), context)));
-            kfy.add(Keyframe.ofFloat(0f, convertDpToPixels(((arrayPosition.getInt(iterador + 1) * screenHeight) / 577), context)));
-
-            iterador = iterador + 2;
-
-            while (iterador < arrayPosition.length()) {
-                x1 = ((arrayPosition.getInt(iterador) * screenWidth) / 906);
-                y1 = ((arrayPosition.getInt(iterador + 1) * screenHeight) / 577);
-
-                x1 = convertDpToPixels(x1, context);
-                y1 = convertDpToPixels(y1, context);
-
-                kfx.add(Keyframe.ofFloat(fraction, x1));
-                kfy.add(Keyframe.ofFloat(fraction, y1));
-
-                fraction += stepFractions;
-
-                iterador = iterador + 2;
-            }
-
-//           Add's final keyframe for x and y
-            kfx.add(Keyframe.ofFloat(1f, convertDpToPixels(((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906), context)));
-            kfy.add(Keyframe.ofFloat(1f, convertDpToPixels(((arrayPosition.getInt(arrayPosition.length() - 1) * screenHeight) / 577), context)));
-
-//           Add's  keyframe for rotation
-            kfrotation.add(Keyframe.ofFloat(0.5f, toRotation[0]));
-            kfrotation.add(Keyframe.ofFloat(1f, toRotation[1]));
-
-//           transform  keyframes
-            PropertyValuesHolder pvhX = PropertyValuesHolder.ofKeyframe("x", kfx.toArray(new Keyframe[0]));
-            PropertyValuesHolder pvhY = PropertyValuesHolder.ofKeyframe("y", kfy.toArray(new Keyframe[0]));
-            PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("rotation", kfrotation.toArray(new Keyframe[0]));
-
-            ObjectAnimator rotationAnim = ObjectAnimator.ofPropertyValuesHolder(myImage, pvhX, pvhY, pvhRotation);
-
-            rotationAnim.setDuration(velocity);
-            rotationAnim.setStartDelay(4000);
-            rotationAnim.start();
-            Log.e("FLAVIO", "Comecou Animacoes");
-
-            new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        public void run() {
-                            Log.e("FLAVIO", "ACABOU Animacoes");
-                        }
-                    },
-                    (velocity + 4000));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static int convertDpToPixels(float dp, Context context) {
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
-        return px;
     }
 
 }

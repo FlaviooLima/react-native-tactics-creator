@@ -6,9 +6,20 @@
     android:orientation="horizontal">
 
     <ScrollView
-        android:id="@+id/slide_bar_scrollview"
+        android:id="@+id/scrollViewSlideBar"
         android:layout_width="70dp"
         android:layout_height="match_parent"
-        android:background="#D3D3D3" />
+        android:scrollbars="none"
+        android:background="#1d1d1d">
+
+        <LinearLayout
+            android:id="@+id/scrollViewLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

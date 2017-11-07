@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#37AEE4"
-    android:orientation="horizontal">
+    android:background="#37AEE4">
 
     <include layout="@layout/slide_bar" />
 
@@ -14,22 +11,22 @@
         android:id="@+id/field_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/field"
-        android:layout_toRightOf="@+id/slide_bar"
         android:layout_toLeftOf="@+id/control_bar"
+        android:layout_toRightOf="@+id/slide_bar"
         android:scaleType="fitXY"
-        />
+        android:src="@drawable/field" />
 
     <RelativeLayout
         android:layout_width="379dp"
         android:layout_height="250dp"
-        android:layout_centerInParent="true"
-        android:id="@+id/base_svg">
+        android:id="@+id/base_svg"
+        android:layout_centerInParent="true">
+
         <ImageView
             android:id="@+id/field_lines_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
+
     </RelativeLayout>
 
 
