@@ -1,30 +1,19 @@
 package com.tactical.creator.components;
 
+
 import com.tactical.creator.utis.*;
-
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-
 import android.graphics.Typeface;
-
-
-import android.util.Log;
 import android.widget.ImageView;
-
 import android.widget.RelativeLayout;
-
-
 import com.facebook.react.uimanager.ThemedReactContext;
-
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.math.BigDecimal;
 
 
@@ -34,15 +23,17 @@ import java.math.BigDecimal;
 
 
 public class PlayerFront {
+    int[] auxColor;
 
-    public float scaleWIDTH = 0.30f;
-    public float scaleHEIGHT = 0.30f;
-    public float WIDTH = 70;
-    public float HEIGHT = 70;
+    private CustomAnimation CustomAnimation = new CustomAnimation();
+    public static final float WIDTH = 1000.000000f;
+    public static final float HEIGHT = 1000.000000f;
+    private static final float[] FLOATCONSTANTARRAY_0 = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
     private boolean inited;
     private Paint paint_0;
     private Typeface typeface_0;
+
     private Paint paint_2;
     private Path path_0;
     private Paint paint_3;
@@ -52,9 +43,6 @@ public class PlayerFront {
     private Paint paint_5;
     private Path path_3;
 
-    private Bitmap b;
-
-    private CustomAnimation CustomAnimation = new CustomAnimation();
 
     private void init() {
         if (inited) return;
@@ -69,36 +57,33 @@ public class PlayerFront {
         path_2 = new Path();
         paint_5 = new Paint();
         path_3 = new Path();
+
     }
+
 
 
     public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, Integer screenHeight, Integer screenWidth, Integer velocity, float[] lastPosition) {
 
         try {
+            float scale = 1;
+            scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
-            float scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
+            int realWidth = (int) (32 * scale);
+            int realHeight = (int) (32 * scale);
 
-            scaleHEIGHT = scaleHEIGHT * scale;
-            scaleWIDTH = scaleWIDTH * scale;
-
-            WIDTH = WIDTH * scale;
-            HEIGHT = HEIGHT * scale;
-
-            b = Bitmap.createBitmap((int) WIDTH, (int) HEIGHT, Bitmap.Config.ARGB_8888);
+            Bitmap b  = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
 
 //            //This code is for testing img background width and height
 //            Paint paint = new Paint();
-//            Path path = new Path();
 //            paint.setStyle(Paint.Style.FILL);
 //            paint.setColor(Color.RED);
-////            paint.setColor(Color.TRANSPARENT);
 //            canvas.drawPaint(paint);
 //            //END
 
             init();
             canvas.save();
-            canvas.scale(scaleWIDTH, scaleHEIGHT);
+            canvas.scale(realWidth / WIDTH, realHeight / HEIGHT);
             paint_0.reset();
             paint_0.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
             paint_0.setStyle(Paint.Style.FILL);
@@ -108,10 +93,13 @@ public class PlayerFront {
             paint_0.setTypeface(typeface_0);
             paint_0.setStrikeThruText(false);
             paint_0.setUnderlineText(false);
+
             canvas.save();
             paint_2.reset();
             paint_2.set(paint_0);
-            paint_2.setColor(Color.parseColor("#" + Integer.toHexString(player.getInt("color"))));
+            auxColor = CustomAnimation.getColorIntAsColor(player.getInt("color"),false);
+            paint_2.setARGB(auxColor[0],auxColor[1],auxColor[2],auxColor[3]);
+
             path_0.reset();
             path_0.moveTo(125.000000f, 714.700012f);
             path_0.cubicTo(204.000000f, 675.200012f, 173.600006f, 706.299988f, 270.500000f, 665.900024f);
@@ -125,8 +113,8 @@ public class PlayerFront {
             path_0.lineTo(0.200000f, 947.100037f);
             path_0.cubicTo(0.200000f, 947.000000f, 0.200000f, 777.100037f, 125.000000f, 714.700012f);
             path_0.close();
+
             path_0.setFillType(Path.FillType.WINDING);
-            canvas.scale(scaleWIDTH, scaleHEIGHT);
             canvas.drawPath(path_0, paint_2);
             canvas.restore();
             canvas.save();
@@ -141,8 +129,8 @@ public class PlayerFront {
             path_1.cubicTo(529.399963f, 865.700012f, 648.700012f, 702.700012f, 710.200012f, 661.000000f);
             path_1.cubicTo(625.200012f, 625.200012f, 610.000000f, 642.799988f, 610.000000f, 642.799988f);
             path_1.close();
+
             path_1.setFillType(Path.FillType.WINDING);
-            canvas.scale(scaleWIDTH, scaleHEIGHT);
             canvas.drawPath(path_1, paint_3);
             canvas.restore();
             canvas.save();
@@ -171,8 +159,8 @@ public class PlayerFront {
             path_2.cubicTo(350.500000f, 168.000000f, 368.700012f, 167.000000f, 394.500000f, 167.000000f);
             path_2.cubicTo(471.399994f, 167.100006f, 540.000000f, 150.300003f, 585.600037f, 124.000000f);
             path_2.close();
+
             path_2.setFillType(Path.FillType.WINDING);
-            canvas.scale(scaleWIDTH, scaleHEIGHT);
             canvas.drawPath(path_2, paint_4);
             canvas.restore();
             canvas.save();
@@ -185,30 +173,34 @@ public class PlayerFront {
             path_3.cubicTo(584.200012f, 71.800003f, 611.799988f, 88.800003f, 633.100037f, 109.800003f);
             path_3.cubicTo(658.000061f, 134.300003f, 674.100037f, 164.100006f, 679.700012f, 194.200012f);
             path_3.cubicTo(642.100037f, 189.500015f, 609.000000f, 174.500015f, 585.600037f, 152.800018f);
-            path_3.cubicTo(540.000000f, 179.000000f, 471.399994f, 195.800003f, 394.600006f, 195.800003f);
-            path_3.cubicTo(368.800018f, 195.800003f, 343.899994f, 193.900009f, 320.500000f, 190.400009f);
+            path_3.cubicTo(540.000061f, 179.000015f, 471.400024f, 195.800018f, 394.600037f, 195.800018f);
+            path_3.cubicTo(368.800049f, 195.800018f, 343.900024f, 193.900024f, 320.500031f, 190.400024f);
             path_3.cubicTo(332.600006f, 123.400002f, 383.399994f, 58.200001f, 499.500000f, 53.100002f);
             path_3.close();
+
             path_3.setFillType(Path.FillType.WINDING);
-            canvas.scale(scaleWIDTH, scaleHEIGHT);
             canvas.drawPath(path_3, paint_5);
             canvas.restore();
+
+            canvas.restore();
+
 
 
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-
             myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
             myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
+//            need to inforce the pivot for some reason
+            myImage.setPivotX(0.0f);
+            myImage.setPivotY(0.0f);
 
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation") );
-
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f,context) * scale),(CustomAnimation.convertDpToPixels(0.0f,context) * scale));
 
         } catch (JSONException e) {
             e.printStackTrace();

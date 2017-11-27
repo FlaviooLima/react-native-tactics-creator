@@ -4,9 +4,14 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
-import android.util.TypedValue;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+import android.util.Log;
+
 import android.widget.ImageView;
 
+
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 import org.json.JSONArray;
@@ -20,8 +25,7 @@ import java.util.List;
 
 public class CustomAnimation {
 
-
-    public void justDoIt(ThemedReactContext context, ImageView myImage, JSONArray arrayPosition, Integer screenHeight, Integer screenWidth, Integer velocity, float rotation) {
+    public void justDoIt(ThemedReactContext context, ImageView myImage, JSONArray arrayPosition, Integer screenHeight, Integer screenWidth, Integer velocity, float rotation, double adjustX, double adjustY) {
         try {
             List<Keyframe> kfx = new ArrayList<Keyframe>();
             List<Keyframe> kfy = new ArrayList<Keyframe>();
@@ -33,8 +37,6 @@ public class CustomAnimation {
             float fraction = stepFractions;
             int iterador = (arrayPosition.length() > 2) ? 0 : 2;
 
-
-//            TODO: getting the x and y is not working, we have
 
             kfx.add(Keyframe.ofFloat(0f, myImage.getX()));
             kfy.add(Keyframe.ofFloat(0f, myImage.getY()));
@@ -54,9 +56,25 @@ public class CustomAnimation {
                 iterador = iterador + 2;
             }
 
-//          Add's final keyframe for x and y
-            kfx.add(Keyframe.ofFloat(1f, convertDpToPixels(((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906), context)));
-            kfy.add(Keyframe.ofFloat(1f, convertDpToPixels(((arrayPosition.getInt(arrayPosition.length() - 1) * screenHeight) / 577), context)));
+
+
+
+// (CustomAnimation.convertDpToPixels(player.getInt("x"), context) * CustomAnimation.convertDpToPixels(screenWidth, context)) /  CustomAnimation.convertDpToPixels(906, context));
+//                myImage.setY((CustomAnimation.convertDpToPixels(player.getInt("y"), context) * CustomAnimation.convertDpToPixels(screenHeight, context)) /  CustomAnimation.convertDpToPixels(577, context));
+
+
+
+
+////          Add's final keyframe for x and y
+//            kfx.add(Keyframe.ofFloat(1f, convertDpToPixels((float)(adjustX + ((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906)), context)));
+//            kfy.add(Keyframe.ofFloat(1f, convertDpToPixels((float) (adjustY +  ((arrayPosition.getInt(arrayPosition.length() - 1) * screenHeight) / 577)), context)));
+
+//            Log.e("FLAVIO","First KEy Grma:  "+ convertDpToPixels((float)(adjustX + ((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906)), context));
+//            Log.e("FLAVIO","seconmd KEy Grma:  "+ (convertDpToPixels(arrayPosition.getInt(arrayPosition.length() - 2), context)* CustomAnimation.convertDpToPixels(screenWidth, context)) / convertDpToPixels(906,context));
+
+
+            kfx.add(Keyframe.ofFloat(1f,(convertDpToPixels(arrayPosition.getInt(arrayPosition.length() - 2), context)* CustomAnimation.convertDpToPixels(screenWidth, context)) / convertDpToPixels(906,context)));
+            kfy.add(Keyframe.ofFloat(1f,(convertDpToPixels(arrayPosition.getInt(arrayPosition.length() - 1), context)* CustomAnimation.convertDpToPixels(screenHeight, context)) / convertDpToPixels(577,context)));
 
 
 //           Add's  keyframe for rotation
@@ -70,19 +88,45 @@ public class CustomAnimation {
 
             ObjectAnimator rotationAnim = ObjectAnimator.ofPropertyValuesHolder(myImage, pvhX, pvhY, pvhRotation);
 
+
             rotationAnim.setDuration(velocity);
             rotationAnim.start();
 
         } catch (Exception e) {
+            Log.e("FLAVIOTESTE","Estourou");
+            Log.e("FLAVIOTESTE",e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public static int convertDpToPixels(float dp, Context context) {
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+//    public static int convertDpToPixels(float dp, Context context) {
+//        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+//        return px;
+//    }
+
+
+    public static float convertDpToPixels(float dp, Context context){
+
+////        another mehtod of px to dp
+//        float mScale = DisplayMetricsHolder.getWindowDisplayMetrics().density;
+//        float x = dp*mScale;
+//        return x ;
+//import com.facebook.react.uimanager.DisplayMetricsHolder;
+
+
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
     }
 
+
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp;
+    }
 
     public float[] doMathForRotation(float from, float to) {
 
@@ -126,6 +170,36 @@ public class CustomAnimation {
         }
 
         return new float[]{angleFrom, angleTo};
+    }
+
+
+    public int[] getColorIntAsColor (int color, Boolean polygno){
+        int[] c = new int[]{255,0,0,0};
+        int R, G, B;
+
+        if (color>0) {
+            B= color % 256;
+            G = (color / 256) % 256;
+            R = ((color / 256) / 256) % 256;
+
+            R = Math.round(R);
+            G = Math.round(G);
+            B = Math.round(B);
+
+            if (!polygno) {
+                c[0]=255;
+                c[1]=R;
+                c[2]=G;
+                c[3]=B;
+            }else {
+                c[0]=130;
+                c[1]=R;
+                c[2]=G;
+                c[3]=B;
+            }
+        }
+
+        return c;
     }
 
 }
