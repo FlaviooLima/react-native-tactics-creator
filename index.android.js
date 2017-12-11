@@ -6,6 +6,7 @@ import { View, requireNativeComponent } from 'react-native'
 var face = {
     name: 'TacticalCreator',
     propTypes: {
+        data: PropTypes.string,
     	...View.propTypes
     }
 }

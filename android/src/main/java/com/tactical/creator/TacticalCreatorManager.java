@@ -537,6 +537,16 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
         }
     };
 
+    private final Runnable measureAndLayoutForPhoto = new Runnable() {
+        @Override
+        public void run() {
+            rootView.measure(
+                    View.MeasureSpec.makeMeasureSpec(rootView.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(rootView.getHeight(), View.MeasureSpec.EXACTLY));
+            rootView.layout(rootView.getLeft(), rootView.getTop(), rootView.getRight(), rootView.getBottom());
+        }
+    };
+
 
 
 
@@ -595,12 +605,15 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
 
             JSONObject auxObject = new JSONObject(source);
             sourceArray = auxObject.getJSONArray("preparedData");
-//            testeScaleWIDTH = Float.parseFloat(auxObject.getString("testeScaleWIDTH"));
-//            testeScaleHEIGHT = Float.parseFloat(auxObject.getString("testeScaleHEIGHT"));
-//            testeWIDTH = auxObject.getInt("testeWIDTH");
-//            testeHEIGHT = auxObject.getInt("testeHEIGHT");
+
+            if(auxObject.getBoolean("takingPhotos")){
+                rootView.findViewById(R.id.control_bar).setVisibility(View.GONE);
+                rootView.findViewById(R.id.slide_bar).setVisibility(View.GONE);
+                rootView.post(measureAndLayoutForPhoto);
+            }
 
             render(auxObject.getString("typeFieldImage"));
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
