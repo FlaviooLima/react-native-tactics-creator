@@ -124,16 +124,21 @@ public class BalizaCircular {
             float scale = 1;
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
-            int realWidth = (int) (50 * scale);
-            int realHeight = (int) (25 * scale);
+            int  baseSizeWidth  = 56*screenWidth/1000;
+            int  baseSizeHeight = 50*screenHeight/1000;
+
+            int realWidth = (int) (baseSizeWidth * scale);
+            int realHeight = (int) (baseSizeHeight * scale);
+
+
 
             Bitmap b  = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
-
+//
 //            //This code is for testing img background width and height
 //            Paint paint = new Paint();
 //            paint.setStyle(Paint.Style.FILL);
-//            paint.setColor(Color.RED);
+//            paint.setColor(Color.YELLOW);
 //            canvas.drawPaint(paint);
 //            //END
 
@@ -412,8 +417,9 @@ public class BalizaCircular {
 
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setX(lastPosition[0]);
+            myImage.setY(lastPosition[1]);
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 

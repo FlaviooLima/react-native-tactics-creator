@@ -833,8 +833,9 @@ public class Baliza {
 
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setX(lastPosition[0]);
+            myImage.setY(lastPosition[1]);
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 

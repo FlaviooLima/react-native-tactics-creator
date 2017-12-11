@@ -78,8 +78,11 @@ public class Poste {
             float scale = 1;
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
-            int realWidth = (int) (40 * scale);
-            int realHeight = (int) (65 * scale);
+            int  baseSizeWidth  = 50*screenWidth/1000;
+            int  baseSizeHeight = 100*screenHeight/1000;
+
+            int realWidth = (int) (baseSizeWidth * scale);
+            int realHeight = (int) (baseSizeHeight * scale);
 
             Bitmap b = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
@@ -163,8 +166,9 @@ public class Poste {
             canvas.restore();
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setX(lastPosition[0]);
+            myImage.setY(lastPosition[1]);
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
@@ -175,7 +179,8 @@ public class Poste {
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(2.0f, context) * scale), (CustomAnimation.convertDpToPixels(0.0f, context) * scale));
+//            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(2.0f, context) * scale), (CustomAnimation.convertDpToPixels(0.0f, context) * scale));
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f, context) * scale), (CustomAnimation.convertDpToPixels(0.0f, context) * scale));
 
         } catch (JSONException e) {
             e.printStackTrace();

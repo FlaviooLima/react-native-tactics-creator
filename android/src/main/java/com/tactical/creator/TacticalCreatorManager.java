@@ -1,31 +1,29 @@
 package com.tactical.creator;
 
-import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.media.Image;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import com.tactical.creator.components.*;
+import com.tactical.creator.components.backgroundSvg.*;
 import com.tactical.creator.utis.CustomAnimation;
 
 import org.json.JSONArray;
@@ -40,9 +38,9 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
     private ThemedReactContext mContext;
     private View rootView;
     private Button button_play, button_pause, button_1x, button_2x, button_4x;
-    private ImageView field_lines_image;
+    private ImageView field_lines_image,field_image;
     private Boolean isPlaying;
-    private int velocity, slidePosition, screenWidth, screenHeight;
+    private int velocity, slidePosition, screenWidth, screenHeight,screenFieldWidth, screenFieldHeight;
     private JSONArray sourceArray;
     private RelativeLayout base_svg;
     private LinearLayout scrollViewLinearLayout;
@@ -78,6 +76,7 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
         scrollViewSlideBar = (ScrollView) rootView.findViewById(R.id.scrollViewSlideBar);
 
         field_lines_image = (ImageView) rootView.findViewById(R.id.field_lines_image);
+        field_image = (ImageView) rootView.findViewById(R.id.field_image);
 
         InitializeComponent();
         return rootView;
@@ -114,7 +113,7 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
     // #
     // ######################################################################################
 
-    public void render() {
+    public void render(String typeFieldImage) {
         try {
             for (int i = 0; i < sourceArray.length(); i++) {
 
@@ -128,6 +127,28 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
 
                 scrollViewLinearLayout.addView(myButton);
             }
+
+//          set campfield  and objects base  Size
+
+            WindowManager wm = (WindowManager) mContext.getSystemService(mContext.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            DisplayMetrics metrics = new DisplayMetrics();
+            display.getMetrics(metrics);
+            Point size = new Point();
+            display.getRealSize(size);
+
+            float width = (float)(metrics.widthPixels-(metrics.widthPixels*0.40));
+            float height = ((577f/906f)*width);
+
+            screenWidth = (int) width;
+            screenHeight = (int) height;
+            screenFieldWidth = (int) width;
+            screenFieldHeight = (int) height;
+
+            base_svg.getLayoutParams().width =(int) width;
+            base_svg.getLayoutParams().height = (int) height;
+
+            setSrcImage(typeFieldImage);
 
             renderObjects();
 
@@ -154,9 +175,6 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
             childToRemove.add(base_svg.getChildAt(aux));
         }
 
-// add example for text to add a few pixals to be good
-//        posX+= (player.getInt("scale")*CustomAnimation.convertDpToPixels(((20 * screenWidth) / 906), context))/CustomAnimation.convertDpToPixels(2.96f,context);
-//        posY+= (player.getInt("scale")*CustomAnimation.convertDpToPixels(((40 * screenHeight) / 577), context))/CustomAnimation.convertDpToPixels(2.96f,context);
 
         try {
             JSONObject slide = sourceArray.getJSONObject(slidePosition);
@@ -168,14 +186,12 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
 
                     switch (player.getInt("type")) {
                         case 0:
-//                        todo: nao estou a conseguir acertar a posicao a 100%
                             (new PlayerCircle()).create(mContext, base_svg, player, screenHeight, screenWidth, velocity, getElementLastPosition("playerExercises", i));
                             break;
                         case 1:
                             (new PlayerFront()).create(mContext, base_svg, player, screenHeight, screenWidth, velocity, getElementLastPosition("playerExercises", i));
                             break;
                         case 2:
-//                    todo: nao estou a conseguir acertar a posicao a 100%
                             (new PlayerTop()).create(mContext, base_svg, player, screenHeight, screenWidth, velocity, getElementLastPosition("playerExercises", i));
                             break;
                         case 3:
@@ -200,11 +216,9 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                             (new BalizaCircular()).create(mContext, base_svg, object, screenHeight, screenWidth, velocity, getElementLastPosition("objectsField", i));
                             break;
                         case 9:
-                            (new Baliza2()).create(mContext, base_svg, object, screenHeight, screenWidth, velocity, getElementLastPosition("objectsField", i), testeScaleWIDTH, testeScaleHEIGHT, testeWIDTH, testeHEIGHT);
-//                        (new Baliza()).create(mContext, base_svg, object, screenHeight, screenWidth, velocity, getElementLastPosition("objectsField", i), testeScaleWIDTH, testeScaleHEIGHT, testeWIDTH, testeHEIGHT);
+                            (new Baliza2()).create(mContext, base_svg, object, screenHeight, screenWidth, velocity, getElementLastPosition("objectsField", i));
                             break;
                         case 8:
-//                        TODO : a aprtir daqui  esta tudo feito com os svg do gabi, atraz esta com os do coelho
                             (new Pessoa()).create(mContext, base_svg, object, screenHeight, screenWidth, velocity, getElementLastPosition("objectsField", i));
                             break;
                         case 7:
@@ -260,10 +274,10 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                 }
             }
 
-
+            //TODO: linhas estao a fazer um drop de perfomance
             if (slide.has("lines")) {
                 JSONArray lines = slide.getJSONArray("lines");
-                Bitmap b = Bitmap.createBitmap((int) CustomAnimation.convertDpToPixels(379, mContext), (int) CustomAnimation.convertDpToPixels(250, mContext), Bitmap.Config.ARGB_8888);
+                Bitmap b = Bitmap.createBitmap((int) CustomAnimation.convertDpToPixels(screenWidth, mContext), (int) CustomAnimation.convertDpToPixels(screenHeight, mContext), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(b);
                 for (int i = 0; i < lines.length(); i++) {
                     JSONObject object = lines.getJSONObject(i);
@@ -290,16 +304,14 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
 
             if (slide.has("textObjectsField")) {
                 JSONArray textObjectsField = slide.getJSONArray("textObjectsField");
-                Bitmap b = Bitmap.createBitmap((int) CustomAnimation.convertDpToPixels(379, mContext), (int) CustomAnimation.convertDpToPixels(250, mContext), Bitmap.Config.ARGB_8888);
+                Bitmap b = Bitmap.createBitmap((int) screenWidth, (int) screenHeight, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(b);
                 for (int i = 0; i < textObjectsField.length(); i++) {
                     JSONObject object = textObjectsField.getJSONObject(i);
-                    (new Text()).create(canvas, mContext,  object, screenHeight, screenWidth);
+                    (new Text()).create(canvas, mContext,  object, screenHeight, screenWidth, base_svg);
                 }
                 ImageView myImage = new ImageView(mContext);
                 myImage.setImageBitmap(b);
-                myImage.setPivotX(0.0f);
-                myImage.setPivotY(0.0f);
                 myImage.setX(0);
                 myImage.setY(0);
                 base_svg.addView(myImage);
@@ -309,7 +321,6 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
 //          Completelly re draw all elements
             base_svg.post(measureAndLayout);
 
-//          Deletes all elemtns in basesvg ina  way that dosent cause flicker
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -319,12 +330,9 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                     childToRemove.clear();
                 }
             }, 3);
-//            }, 10);  old value
 
 
         } catch (Exception e) {
-            Log.e("FLAVIO", "renderObjects:");
-            Log.e("FLAVIO", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -348,15 +356,15 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                     JSONObject player = playerExercises.getJSONObject(position);
                     JSONObject lineAnima = player.getJSONObject("lineAnima");
                     JSONArray data = lineAnima.optJSONArray("data");
-                    whatReturn = new float[]{Float.parseFloat(data.getString((data.length() - 2))), Float.parseFloat(data.getString((data.length() - 1))), Float.parseFloat(player.getString("rotation"))};
+                    whatReturn = new float[]{(int) ((Float.parseFloat(data.getString((data.length() - 2))) * screenWidth) / 906), (int) (( Float.parseFloat(data.getString((data.length() - 1))) * screenHeight) / 577) , Float.parseFloat(player.getString("rotation"))};
                     break;
-                    case "objectsField":
-                        JSONObject slide2 = sourceArray.getJSONObject(slidePositionCopy);
-                        JSONArray objectsField = slide2.getJSONArray("objectsField");
-                        JSONObject object = objectsField.getJSONObject(position);
-                        JSONObject lineAnimaObject = object.getJSONObject("lineAnima");
-                        JSONArray data2 = lineAnimaObject.optJSONArray("data");
-                        whatReturn = new float[]{Float.parseFloat(data2.getString((data2.length() - 2))), Float.parseFloat(data2.getString((data2.length() - 1))), Float.parseFloat(object.getString("rotation"))};
+                case "objectsField":
+                    JSONObject slide2 = sourceArray.getJSONObject(slidePositionCopy);
+                    JSONArray objectsField = slide2.getJSONArray("objectsField");
+                    JSONObject object = objectsField.getJSONObject(position);
+                    JSONObject lineAnimaObject = object.getJSONObject("lineAnima");
+                    JSONArray data2 = lineAnimaObject.optJSONArray("data");
+                    whatReturn = new float[]{(int) ((Float.parseFloat(data2.getString((data2.length() - 2))) * screenWidth) / 906), (int) (( Float.parseFloat(data2.getString((data2.length() - 1))) * screenHeight) / 577) , Float.parseFloat(object.getString("rotation"))};
                     break;
             }
         }
@@ -530,6 +538,10 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
     };
 
 
+
+
+
+
     //                                   Props From React
     // ######################################################################################
     // #
@@ -537,66 +549,58 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
     // #
     // ######################################################################################
 
-    @ReactProp(name = "src")
-    public void setSrcImage(View view, String source) {
-
+    public void setSrcImage(String source) {
         switch (source) {
             case "field-bg-complete":
-                field_lines_image.setImageResource(R.drawable.field_bg_complete);
+                (new FieldBgComplete()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-half":
-                field_lines_image.setImageResource(R.drawable.field_bg_half);
+                (new FieldBgHalf()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-half2":
-                field_lines_image.setImageResource(R.drawable.field_bg_half2);
+                (new FieldBgHalf2()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-rectangle":
-                field_lines_image.setImageResource(R.drawable.field_bg_rectangle);
+                (new FieldBgRectangle()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-rectangle2":
-                field_lines_image.setImageResource(R.drawable.field_bg_rectangle2);
+                (new FieldBgRectangle2()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-rectangle3":
-                field_lines_image.setImageResource(R.drawable.field_bg_rectangle3);
+                (new FieldBgRectangle3()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-rectangle4":
-                field_lines_image.setImageResource(R.drawable.field_bg_rectangle4);
+                (new FieldBgRectangle4()).create(field_lines_image,   screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-rectangle6":
-                field_lines_image.setImageResource(R.drawable.field_bg_rectangle6);
+                (new FieldBgRectangle6()).create(field_lines_image, screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-square":
-                field_lines_image.setImageResource(R.drawable.field_bg_square);
+                (new FieldBgSquare()).create(field_lines_image, screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-triangle":
-                field_lines_image.setImageResource(R.drawable.field_bg_triangle);
+                (new FieldBgTriangle()).create(field_lines_image, screenFieldHeight,  screenFieldWidth);
                 break;
             case "field-bg-circle":
-                field_lines_image.setImageResource(R.drawable.field_bg_circle);
+                (new FieldBgCircle()).create(field_lines_image, screenFieldHeight,  screenFieldWidth);
                 break;
             case "false":
                 break;
         }
-
     }
 
     @ReactProp(name = "data")
-    public void setScreenHeight(View view, String source) {
+    public void setData(View view, String source) {
         try {
-
 
             JSONObject auxObject = new JSONObject(source);
             sourceArray = auxObject.getJSONArray("preparedData");
-            screenWidth = auxObject.getInt("widthOriginalDevice");
-            screenHeight = auxObject.getInt("heightOriginalDevice");
-//            Para apagar
-            testeScaleWIDTH = Float.parseFloat(auxObject.getString("testeScaleWIDTH"));
-            testeScaleHEIGHT = Float.parseFloat(auxObject.getString("testeScaleHEIGHT"));
+//            testeScaleWIDTH = Float.parseFloat(auxObject.getString("testeScaleWIDTH"));
+//            testeScaleHEIGHT = Float.parseFloat(auxObject.getString("testeScaleHEIGHT"));
+//            testeWIDTH = auxObject.getInt("testeWIDTH");
+//            testeHEIGHT = auxObject.getInt("testeHEIGHT");
 
-            testeWIDTH = auxObject.getInt("testeWIDTH");
-
-            testeHEIGHT = auxObject.getInt("testeHEIGHT");
-            render();
+            render(auxObject.getString("typeFieldImage"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

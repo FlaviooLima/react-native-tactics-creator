@@ -84,15 +84,18 @@ public class Baliza2 {
 
     }
 
-    public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, Integer screenHeight, Integer screenWidth, Integer velocity, float[] lastPosition,  float testeScaleWIDTH, float testeScaleHEIGHT, Integer testeWIDTH, Integer testeHEIGHT) {
+    public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, Integer screenHeight, Integer screenWidth, Integer velocity, float[] lastPosition) {
         try {
 
             float scale = 1;
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
 
-            int realWidth = (int) (testeWIDTH * scale);
-            int realHeight = (int) (testeHEIGHT * scale);
+            int  baseSizeWidth  = 110*screenWidth/1000;
+            int  baseSizeHeight = 90*screenHeight/1000;
+
+            int realWidth = (int) (baseSizeWidth * scale);
+            int realHeight = (int) (baseSizeHeight * scale);
 
 
 
@@ -1377,8 +1380,9 @@ public class Baliza2 {
             myImage.setImageBitmap(b);
             myImage.setPivotX(0.0f);
             myImage.setPivotY(0.0f);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setX(lastPosition[0]);
+            myImage.setY(lastPosition[1]);
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
@@ -1388,7 +1392,7 @@ public class Baliza2 {
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(testeScaleWIDTH,context) * scale),(CustomAnimation.convertDpToPixels(testeScaleHEIGHT,context) * scale));
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0f,context) * scale),(CustomAnimation.convertDpToPixels(0f,context) * scale));
 
         } catch (JSONException e) {
             e.printStackTrace();

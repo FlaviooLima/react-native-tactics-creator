@@ -1,24 +1,26 @@
+
+
 package com.tactical.creator.components;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Typeface;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+        import android.graphics.Bitmap;
+        import android.graphics.Canvas;
+        import android.graphics.Color;
+        import android.graphics.Matrix;
+        import android.graphics.Paint;
+        import android.graphics.Path;
+        import android.graphics.Typeface;
+        import android.util.Log;
+        import android.widget.ImageView;
+        import android.widget.RelativeLayout;
 
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.tactical.creator.utis.CustomAnimation;
+        import com.facebook.react.uimanager.ThemedReactContext;
+        import com.tactical.creator.utis.CustomAnimation;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+        import org.json.JSONArray;
+        import org.json.JSONException;
+        import org.json.JSONObject;
 
-import java.math.BigDecimal;
+        import java.math.BigDecimal;
 
 public class PlayerCircle {
     int[] auxColor;
@@ -56,12 +58,22 @@ public class PlayerCircle {
 
     public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, Integer screenHeight, Integer screenWidth, Integer velocity, float[] lastPosition) {
         try {
+            double adjustX=0;
+            double adjustY=0;
+
+
             float scale = 1;
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
+            adjustX = (CustomAnimation.convertDpToPixels(2.0f,context) * scale);
+            adjustY = (CustomAnimation.convertDpToPixels(1.0f,context) * scale);
 
-            int realWidth = (int) (40 * scale);
-            int realHeight = (int) (40 * scale);
+            int  baseSizeWidth  = 42*screenWidth/1000;
+            int  baseSizeHeight = 66*screenHeight/1000;
+
+            int realWidth = (int) (baseSizeWidth * scale);
+            int realHeight = (int) (baseSizeHeight * scale);
+
 
             Bitmap b  = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
@@ -135,8 +147,10 @@ public class PlayerCircle {
 
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setX((float) adjustX + lastPosition[0]);
+            myImage.setY((float) adjustY + lastPosition[1]);
+
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
@@ -147,9 +161,7 @@ public class PlayerCircle {
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-
-            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(2.0f,context) * scale),(CustomAnimation.convertDpToPixels(1.0f,context) * scale));
-
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), adjustX ,adjustY);
 
         } catch (JSONException e) {
             e.printStackTrace();

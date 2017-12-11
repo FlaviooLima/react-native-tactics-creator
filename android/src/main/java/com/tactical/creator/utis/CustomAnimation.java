@@ -37,16 +37,12 @@ public class CustomAnimation {
             float fraction = stepFractions;
             int iterador = (arrayPosition.length() > 2) ? 0 : 2;
 
-
             kfx.add(Keyframe.ofFloat(0f, myImage.getX()));
             kfy.add(Keyframe.ofFloat(0f, myImage.getY()));
 
             while (iterador < arrayPosition.length()) {
                 x1 = ((arrayPosition.getInt(iterador) * screenWidth) / 906);
                 y1 = ((arrayPosition.getInt(iterador + 1) * screenHeight) / 577);
-
-                x1 = convertDpToPixels(x1, context);
-                y1 = convertDpToPixels(y1, context);
 
                 kfx.add(Keyframe.ofFloat(fraction, x1));
                 kfy.add(Keyframe.ofFloat(fraction, y1));
@@ -56,30 +52,14 @@ public class CustomAnimation {
                 iterador = iterador + 2;
             }
 
-
-
-
-// (CustomAnimation.convertDpToPixels(player.getInt("x"), context) * CustomAnimation.convertDpToPixels(screenWidth, context)) /  CustomAnimation.convertDpToPixels(906, context));
-//                myImage.setY((CustomAnimation.convertDpToPixels(player.getInt("y"), context) * CustomAnimation.convertDpToPixels(screenHeight, context)) /  CustomAnimation.convertDpToPixels(577, context));
-
-
-
-
-////          Add's final keyframe for x and y
-//            kfx.add(Keyframe.ofFloat(1f, convertDpToPixels((float)(adjustX + ((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906)), context)));
-//            kfy.add(Keyframe.ofFloat(1f, convertDpToPixels((float) (adjustY +  ((arrayPosition.getInt(arrayPosition.length() - 1) * screenHeight) / 577)), context)));
-
-//            Log.e("FLAVIO","First KEy Grma:  "+ convertDpToPixels((float)(adjustX + ((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906)), context));
-//            Log.e("FLAVIO","seconmd KEy Grma:  "+ (convertDpToPixels(arrayPosition.getInt(arrayPosition.length() - 2), context)* CustomAnimation.convertDpToPixels(screenWidth, context)) / convertDpToPixels(906,context));
-
-
-            kfx.add(Keyframe.ofFloat(1f,(convertDpToPixels(arrayPosition.getInt(arrayPosition.length() - 2), context)* CustomAnimation.convertDpToPixels(screenWidth, context)) / convertDpToPixels(906,context)));
-            kfy.add(Keyframe.ofFloat(1f,(convertDpToPixels(arrayPosition.getInt(arrayPosition.length() - 1), context)* CustomAnimation.convertDpToPixels(screenHeight, context)) / convertDpToPixels(577,context)));
-
+//            add the final position in to the array
+            kfx.add(Keyframe.ofFloat(1f,(float) (adjustX + ((arrayPosition.getInt(arrayPosition.length() - 2) * screenWidth) / 906))));
+            kfy.add(Keyframe.ofFloat(1f, (float) (adjustY +  ((arrayPosition.getInt(arrayPosition.length() - 1) * screenHeight) / 577))));
 
 //           Add's  keyframe for rotation
             kfrotation.add(Keyframe.ofFloat(0.5f, toRotation[0]));
             kfrotation.add(Keyframe.ofFloat(1f, toRotation[1]));
+
 
 //           transform  keyframes
             PropertyValuesHolder pvhX = PropertyValuesHolder.ofKeyframe("x", kfx.toArray(new Keyframe[0]));
@@ -88,13 +68,10 @@ public class CustomAnimation {
 
             ObjectAnimator rotationAnim = ObjectAnimator.ofPropertyValuesHolder(myImage, pvhX, pvhY, pvhRotation);
 
-
             rotationAnim.setDuration(velocity);
             rotationAnim.start();
 
         } catch (Exception e) {
-            Log.e("FLAVIOTESTE","Estourou");
-            Log.e("FLAVIOTESTE",e.getMessage());
             e.printStackTrace();
         }
     }

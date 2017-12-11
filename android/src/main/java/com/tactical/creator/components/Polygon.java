@@ -38,8 +38,10 @@ public class Polygon {
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
 
-            float   testeWidth = CustomAnimation.convertDpToPixels(((player.getInt("width") * screenWidth) / 906), context);
-            float   testeHeifht = CustomAnimation.convertDpToPixels(((player.getInt("height") * screenHeight) / 577), context);
+//            float   testeWidth = CustomAnimation.convertDpToPixels(((player.getInt("width") * screenWidth) / 906), context);
+//            float   testeHeifht = CustomAnimation.convertDpToPixels(((player.getInt("height") * screenHeight) / 577), context);
+            float   testeWidth = ((player.getInt("width") * screenWidth) / 906);
+            float   testeHeifht = ((player.getInt("height") * screenHeight) / 577);
 
 
             int realWidth = (int) (testeWidth * scale);
@@ -99,8 +101,8 @@ public class Polygon {
             myImage.setPivotX(0.0f);
             myImage.setPivotY(0.0f);
 
-            myImage.setX(CustomAnimation.convertDpToPixels(((player.getInt("x") * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((player.getInt("y") * screenHeight) / 577), context));
+            myImage.setX(((player.getInt("x") * screenWidth) / 906));
+            myImage.setY(((player.getInt("y") * screenHeight) / 577));
 
             myImage.setRotation((CustomAnimation.doMathForRotation(myImage.getRotation(),(float)player.getDouble("rotation")))[1]);
             base_svg.addView(myImage);

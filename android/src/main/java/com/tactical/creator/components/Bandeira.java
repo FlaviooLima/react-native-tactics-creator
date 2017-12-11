@@ -66,8 +66,15 @@ public class Bandeira {
 
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
-            int realWidth = (int) (40 * scale);
-            int realHeight = (int) (50 * scale);
+
+            int  baseSizeWidth  = 70*screenWidth/1000;
+            int  baseSizeHeight = 100*screenHeight/1000;
+
+            int realWidth = (int) (baseSizeWidth * scale);
+            int realHeight = (int) (baseSizeHeight * scale);
+
+//            int realWidth = (int) (40 * scale);
+//            int realHeight = (int) (50 * scale);
 
             Bitmap b = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
@@ -126,8 +133,9 @@ public class Bandeira {
 
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+            myImage.setX(lastPosition[0]);
+            myImage.setY(lastPosition[1]);
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
@@ -138,7 +146,8 @@ public class Bandeira {
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f,context) * scale),(CustomAnimation.convertDpToPixels(2.0f,context) * scale));
+//            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f,context) * scale),(CustomAnimation.convertDpToPixels(2.0f,context) * scale));
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f,context) * scale),(CustomAnimation.convertDpToPixels(0.0f,context) * scale));
 
 
 

@@ -1,21 +1,15 @@
 package com.tactical.creator.components;
 
-import android.graphics.Bitmap;
+
 import android.graphics.Canvas;
-import android.graphics.Color;
+
 import android.graphics.DashPathEffect;
-import android.graphics.Matrix;
+
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.graphics.RectF;
-import android.graphics.Typeface;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import android.graphics.PointF;
+import android.widget.RelativeLayout;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.tactical.creator.utis.CustomAnimation;
 
@@ -23,9 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -50,7 +41,6 @@ public class Line {
             for (int i = 2; i < data.length(); i += 2) {
                 pathLine.lineTo(CustomAnimation.convertDpToPixels(((data.getInt(i) * screenWidth) / 906), context), CustomAnimation.convertDpToPixels(((data.getInt(i + 1) * screenHeight) / 577), context));
             }
-
 
             auxColor = CustomAnimation.getColorIntAsColor(player.getInt("color"), false);
             paintWhite.setARGB(auxColor[0], auxColor[1], auxColor[2], auxColor[3]);
@@ -84,8 +74,6 @@ public class Line {
 //
                 Path arrayPathRight = drawArrow2(data, context, screenWidth, screenHeight, false,  player.getInt("typeLine"));
                 canvas.drawPath(arrayPathRight, paint);
-
-
             }
 
             canvas.save();
@@ -94,8 +82,6 @@ public class Line {
 
 
         } catch (JSONException e) {
-            Log.e("FLAVIO2", "EstourouLine: ");
-            Log.e("FLAVIO", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -108,29 +94,14 @@ public class Line {
         float abx, aby, ab, cx, cy, dx, dy, ex, ey;
         float size = CustomAnimation.convertDpToPixels(8, context);
         float ratio = CustomAnimation.convertDpToPixels(1, context);
-//        float size = 12, ratio = 2;
 
         abx = bx - ax;
         aby = by - ay;
         ab = (float) Math.sqrt((abx * abx + aby * aby));
 
 
-//        Log.e("FLAVIO2", "Everything0: " + bx + " -- " + ax);
-//        Log.e("FLAVIO2", "Everything1: " + by + " -- " + ay);
-//        Log.e("FLAVIO2", "Everything2: " + abx + " -- " + ab);
-//        Log.e("FLAVIO2", "Everything3: " + aby + " -- " + ab);
-
         cx = bx - size * abx / ab;
         cy = by - size * aby / ab;
-
-        Log.e("FLAVIO2", "-----------------------------------");
-        Log.e("FLAVIO2", "Everything1: " + cx + " =" + bx + " - " + size + " * " + abx + " / " + ab);
-        Log.e("FLAVIO2", "Everything2: " + cy + " =" + by + " - " + size + " * " + aby + " / " + ab);
-
-
-//        Log.e("FLAVIO2", "Everything: "+bx +" - "+ size +" * "+ abx +" / "+ ab+" == "+cx);
-//        Log.e("FLAVIO2", "Everything: "+by +"-"+ size +"*"+ aby +"/"+ ab+"== "+cy);
-//        Log.e("FLAVIO2", "Everything: "+abx+" -- "+aby+" -- "+ab+" -- "+by);
 
         dx = cx + (by - cy) / ratio;
         dy = cy + (cx - bx) / ratio;
@@ -140,8 +111,7 @@ public class Line {
 
         arrow1.moveTo(bx, by);
         arrow1.lineTo(dx, dy);
-//Log.e("FLAVIO2", "Arrow1: "+bx+" -- "+by+" -- "+dx+" -- "+dy);
-//Log.e("FLAVIO2", "Arrow2: "+ex+" -- "+ey+" -- "+bx+" -- "+by);
+
 
         arrow2.moveTo(ex, ey);
         arrow2.lineTo(bx, by);

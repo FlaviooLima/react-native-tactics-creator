@@ -2,18 +2,23 @@ package com.tactical.creator.components;
 
 
 import com.tactical.creator.utis.*;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
 import com.facebook.react.uimanager.ThemedReactContext;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.math.BigDecimal;
 
 
@@ -28,7 +33,6 @@ public class PlayerFront {
     private CustomAnimation CustomAnimation = new CustomAnimation();
     public static final float WIDTH = 1000.000000f;
     public static final float HEIGHT = 1000.000000f;
-    private static final float[] FLOATCONSTANTARRAY_0 = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
     private boolean inited;
     private Paint paint_0;
@@ -61,23 +65,26 @@ public class PlayerFront {
     }
 
 
-
     public void create(ThemedReactContext context, RelativeLayout base_svg, JSONObject player, Integer screenHeight, Integer screenWidth, Integer velocity, float[] lastPosition) {
 
         try {
             float scale = 1;
             scale = BigDecimal.valueOf(player.getDouble("scale")).floatValue();
 
-            int realWidth = (int) (32 * scale);
-            int realHeight = (int) (32 * scale);
 
-            Bitmap b  = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
+            int  baseSizeWidth  = 46*screenWidth/1000;
+            int  baseSizeHeight = 68*screenHeight/1000;
+
+            int realWidth = (int) (baseSizeWidth * scale);
+            int realHeight = (int) (baseSizeHeight * scale);
+
+            Bitmap b = Bitmap.createBitmap((int) realWidth, (int) realHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(b);
 
 //            //This code is for testing img background width and height
 //            Paint paint = new Paint();
 //            paint.setStyle(Paint.Style.FILL);
-//            paint.setColor(Color.RED);
+//            paint.setColor(Color.YELLOW);
 //            canvas.drawPaint(paint);
 //            //END
 
@@ -97,8 +104,8 @@ public class PlayerFront {
             canvas.save();
             paint_2.reset();
             paint_2.set(paint_0);
-            auxColor = CustomAnimation.getColorIntAsColor(player.getInt("color"),false);
-            paint_2.setARGB(auxColor[0],auxColor[1],auxColor[2],auxColor[3]);
+            auxColor = CustomAnimation.getColorIntAsColor(player.getInt("color"), false);
+            paint_2.setARGB(auxColor[0], auxColor[1], auxColor[2], auxColor[3]);
 
             path_0.reset();
             path_0.moveTo(125.000000f, 714.700012f);
@@ -185,11 +192,12 @@ public class PlayerFront {
             canvas.restore();
 
 
-
             ImageView myImage = new ImageView(context);
             myImage.setImageBitmap(b);
-            myImage.setX(CustomAnimation.convertDpToPixels(((lastPosition[0] * screenWidth) / 906), context));
-            myImage.setY(CustomAnimation.convertDpToPixels(((lastPosition[1] * screenHeight) / 577), context));
+
+            myImage.setX(lastPosition[0]);
+            myImage.setY(lastPosition[1]);
+
             myImage.setRotation(lastPosition[2]);
             base_svg.addView(myImage);
 
@@ -200,7 +208,7 @@ public class PlayerFront {
             JSONObject lineAnima = player.getJSONObject("lineAnima");
             JSONArray arrayPosition = lineAnima.optJSONArray("data");
 
-            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f,context) * scale),(CustomAnimation.convertDpToPixels(0.0f,context) * scale));
+            CustomAnimation.justDoIt(context, myImage, arrayPosition, screenHeight, screenWidth, velocity, (float) player.getInt("rotation"), (CustomAnimation.convertDpToPixels(0.0f, context) * scale), (CustomAnimation.convertDpToPixels(0.0f, context) * scale));
 
         } catch (JSONException e) {
             e.printStackTrace();

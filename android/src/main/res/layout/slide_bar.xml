@@ -3,6 +3,7 @@
     android:id="@+id/slide_bar"
     android:layout_width="70dp"
     android:layout_height="match_parent"
+    android:layout_alignParentLeft="true"
     android:orientation="horizontal">
 
     <ScrollView
