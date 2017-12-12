@@ -3,7 +3,6 @@ package com.tactical.creator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewManager;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -415,7 +415,6 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
                 scrollViewSlideBar.smoothScrollTo(0, (int) lastSelectSlideButton.getY());
             }
         });
-
         renderObjects();
 
         handler.postDelayed(new Runnable() {
@@ -606,11 +605,23 @@ public class TacticalCreatorManager extends SimpleViewManager<View> {
             JSONObject auxObject = new JSONObject(source);
             sourceArray = auxObject.getJSONArray("preparedData");
 
+            if(auxObject.getBoolean("deleteView")){
+                ((ViewManager)rootView.getParent()).removeView(rootView);
+                handler.removeCallbacksAndMessages(null);
+            }
+
+
+
+
             if(auxObject.getBoolean("takingPhotos")){
                 rootView.findViewById(R.id.control_bar).setVisibility(View.GONE);
                 rootView.findViewById(R.id.slide_bar).setVisibility(View.GONE);
                 rootView.post(measureAndLayoutForPhoto);
             }
+
+
+
+
 
             render(auxObject.getString("typeFieldImage"));
 
